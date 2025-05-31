@@ -29,7 +29,13 @@ export default function NfcCardsScreen() {
   const initializeNfc = async () => {
     setIsInitializing(true);
     try {
-      if (!NfcService.isNfcSupported()) {
+      // Wait a bit for the service to fully initialize
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const isSupported = NfcService.isNfcSupported();
+      console.log('NFC Support check result:', isSupported);
+      
+      if (!isSupported) {
         Alert.alert('NFC Not Supported', 'Your device does not support NFC functionality.');
         return;
       }
@@ -38,10 +44,12 @@ export default function NfcCardsScreen() {
       if (started) {
         setIsNfcActive(true);
         console.log('NFC initialized successfully');
+      } else {
+        Alert.alert('NFC Initialization Failed', 'Could not start NFC service. Please ensure NFC is enabled in your device settings.');
       }
     } catch (error) {
       console.error('Failed to initialize NFC:', error);
-      Alert.alert('NFC Error', 'Failed to initialize NFC. Please check if NFC is enabled on your device.');
+      Alert.alert('NFC Error', `Failed to initialize NFC: ${error.message || 'Unknown error'}`);
     } finally {
       setIsInitializing(false);
     }

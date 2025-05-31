@@ -27,22 +27,46 @@ class NfcService {
   private tagListener: ((tag: TagEvent) => void) | null = null;
 
   constructor() {
-    this.init();
+    // Initialize asynchronously without blocking constructor
+    this.init().catch(error => {
+      console.warn('NFC initialization failed in constructor:', error);
+      this.isSupported = false;
+    });
   }
 
   private async init(): Promise<void> {
     try {
+      if (Platform.OS === 'web') {
+        this.isSupported = false;
+        console.log('Web platform - NFC not supported');
+        return;
+      }
+
       if (Platform.OS === 'android' || Platform.OS === 'ios') {
-        const supportResult = await NfcManager.isSupported();
-        // Handle null/undefined values properly
-        this.isSupported = Boolean(supportResult);
+        // Add timeout and better error handling
+        const checkSupport = async (): Promise<boolean> => {
+          try {
+            const supportResult = await Promise.race([
+              NfcManager.isSupported(),
+              new Promise<boolean>((_, reject) => 
+                setTimeout(() => reject(new Error('NFC check timeout')), 5000)
+              )
+            ]);
+            return Boolean(supportResult);
+          } catch (error) {
+            console.warn('NFC support check failed:', error);
+            return false;
+          }
+        };
+
+        this.isSupported = await checkSupport();
         console.log(`NFC support: ${this.isSupported}`);
       } else {
         this.isSupported = false;
-        console.log('NFC not supported on this platform');
+        console.log('Platform does not support NFC');
       }
     } catch (error) {
-      console.error('Error checking NFC support:', error);
+      console.error('Error during NFC initialization:', error);
       this.isSupported = false;
     }
   }
@@ -54,13 +78,20 @@ class NfcService {
         return false;
       }
 
+      // Ensure initialization is complete
       if (!this.isSupported) {
         console.log('NFC not supported on this device');
         return false;
       }
 
-      // Initialize NFC Manager with proper error handling
-      await NfcManager.start();
+      // Add timeout for start operation
+      await Promise.race([
+        NfcManager.start(),
+        new Promise<never>((_, reject) => 
+          setTimeout(() => reject(new Error('NFC start timeout')), 10000)
+        )
+      ]);
+
       this.isInitialized = true;
       console.log('NFC Manager started successfully');
       return true;
