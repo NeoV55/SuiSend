@@ -1,4 +1,3 @@
-
 import { Tabs } from 'expo-router';
 import React from 'react';
 import { Home, CreditCard, TrendingUp, Settings, Bell } from 'lucide-react-native';
@@ -55,14 +54,23 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="settings"
-        options={{
-          title: 'Settings',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon icon={Settings} color={color} focused={focused} />
-          ),
-        }}
-      />
+          name="nfc-cards"
+          options={{
+            title: 'NFC Cards',
+            tabBarIcon: ({ color, focused }) => (
+              <TabBarIcon name={focused ? 'card' : 'card-outline'} color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="settings"
+          options={{
+            title: 'Settings',
+            tabBarIcon: ({ color, focused }) => (
+              <TabBarIcon name={focused ? 'settings' : 'settings-outline'} color={color} />
+            ),
+          }}
+        />
       <Tabs.Screen
         name="analytics"
         options={{

@@ -34,33 +34,14 @@ export default function CardsScreen() {
   };
 
   const createNfcCard = async () => {
-    if (!walletInfo?.cardMode) {
-      Alert.alert('Card Mode Required', 'Please select a card mode (sender or receiver) first');
-      return;
-    }
-
-    if (!walletInfo?.address) {
-      Alert.alert('Wallet Required', 'No wallet address found');
-      return;
-    }
-
-    try {
-      const cardData = await NfcService.createWalletCard(
-        walletInfo.address,
-        walletInfo.cardMode,
-        walletInfo.balance || 0
-      );
-
-      Alert.alert(
-        '🎴 NFC Card Created!',
-        `Successfully created ${walletInfo.cardMode} card with ID: ${cardData.id}\n\nPlace an NFC tag near your device to write the wallet data.`,
-        [
-          { text: 'OK', style: 'default' }
-        ]
-      );
-    } catch (error) {
-      Alert.alert('Error', `Failed to create NFC card: ${error.message}`);
-    }
+    Alert.alert(
+      'Create NFC Card',
+      'Use the NFC Cards tab to create and manage your NFC wallet cards with full functionality.',
+      [
+        { text: 'Go to NFC Cards', onPress: () => {/* Navigation would go here */} },
+        { text: 'Cancel', style: 'cancel' }
+      ]
+    );
   };
 
   const styles = StyleSheet.create({
