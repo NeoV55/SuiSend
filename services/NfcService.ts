@@ -33,9 +33,10 @@ class NfcService {
   private async init(): Promise<void> {
     try {
       if (Platform.OS === 'android' || Platform.OS === 'ios') {
-        const isSupported = await NfcManager.isSupported();
-        this.isSupported = isSupported;
-        console.log(`NFC support: ${isSupported}`);
+        const supportResult = await NfcManager.isSupported();
+        // Handle null/undefined values properly
+        this.isSupported = Boolean(supportResult);
+        console.log(`NFC support: ${this.isSupported}`);
       } else {
         this.isSupported = false;
         console.log('NFC not supported on this platform');
@@ -48,16 +49,17 @@ class NfcService {
 
   async start(): Promise<boolean> {
     try {
-      if (!this.isSupported) {
-        throw new Error('NFC not supported on this platform');
-      }
-
       if (Platform.OS === 'web') {
         console.log('Web platform detected, NFC not available');
         return false;
       }
 
-      // Initialize NFC Manager
+      if (!this.isSupported) {
+        console.log('NFC not supported on this device');
+        return false;
+      }
+
+      // Initialize NFC Manager with proper error handling
       await NfcManager.start();
       this.isInitialized = true;
       console.log('NFC Manager started successfully');
@@ -65,7 +67,7 @@ class NfcService {
     } catch (error) {
       console.error('Error starting NFC Manager:', error);
       this.isInitialized = false;
-      throw error;
+      return false;
     }
   }
 
@@ -250,7 +252,7 @@ class NfcService {
   }
 
   isNfcSupported(): boolean {
-    return this.isSupported;
+    return Boolean(this.isSupported);
   }
 
   isNfcEnabled(): boolean {
