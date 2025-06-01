@@ -41,25 +41,23 @@ class NfcService {
         return;
       }
 
+      // Only initialize NFC on native platforms
       if (Platform.OS === 'android' || Platform.OS === 'ios') {
-        // Add timeout and better error handling
-        const checkSupport = async (): Promise<boolean> => {
-          try {
-            const supportResult = await Promise.race([
-              NfcManager.isSupported(),
-              new Promise<boolean>((_, reject) => 
-                setTimeout(() => reject(new Error('NFC check timeout')), 5000)
-              )
-            ]);
-            return Boolean(supportResult);
-          } catch (error) {
-            console.warn('NFC support check failed:', error);
-            return false;
+        try {
+          // Check if NFC manager is available first
+          if (typeof NfcManager === 'undefined' || !NfcManager.isSupported) {
+            console.log('NFC Manager not available');
+            this.isSupported = false;
+            return;
           }
-        };
 
-        this.isSupported = await checkSupport();
-        console.log(`NFC support: ${this.isSupported}`);
+          const supportResult = await NfcManager.isSupported();
+          this.isSupported = Boolean(supportResult);
+          console.log(`NFC support: ${this.isSupported}`);
+        } catch (error) {
+          console.warn('NFC support check failed:', error);
+          this.isSupported = false;
+        }
       } else {
         this.isSupported = false;
         console.log('Platform does not support NFC');
