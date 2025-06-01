@@ -4281,10 +4281,24 @@ expo-asset@~10.0.10:
     invariant "^2.2.4"
     md5-file "^3.2.3"
 
+expo-barcode-scanner@^13.0.1:
+  version "13.0.1"
+  resolved "https://registry.npmjs.org/expo-barcode-scanner/-/expo-barcode-scanner-13.0.1.tgz"
+  integrity sha512-xBGLT1An2gpAMIQRTLU3oHydKohX8r8F9/ait1Fk9Vgd0GraFZbP4IiT7nHMlaw4H6E7Muucf7vXpGV6u7d4HQ==
+  dependencies:
+    expo-image-loader "~4.7.0"
+
 expo-blur@~13.0.2:
   version "13.0.3"
   resolved "https://registry.npmjs.org/expo-blur/-/expo-blur-13.0.3.tgz"
   integrity sha512-z5W9ZGlG6ZiRLuoJZG1AHRvjK8j+2+nc/mtvEtyAa8T/8iTNpUnX4eC8xXDoTL/H4y2pc3cHvytDjCXJG26pcQ==
+
+expo-camera@^16.1.6:
+  version "16.1.6"
+  resolved "https://registry.npmjs.org/expo-camera/-/expo-camera-16.1.6.tgz"
+  integrity sha512-caVSfoTUaayYhH5gicrXWCgBQIVrotPOH3jUDr4vhN5VQDB/+TWaY+le2nQtNXgQEz14Af+H/TNvYpvvNj5Ktg==
+  dependencies:
+    invariant "^2.2.4"
 
 expo-clipboard@^7.1.4:
   version "7.1.4"
@@ -4322,6 +4336,11 @@ expo-haptics@~13.0.1:
   version "13.0.1"
   resolved "https://registry.npmjs.org/expo-haptics/-/expo-haptics-13.0.1.tgz"
   integrity sha512-qG0EOLDE4bROVT3DtUSyV9g3iB3YFu9j3711X7SNNEnBDXc+2/p3wGDPTnJvPW0ao6HG3/McAOrBQA5hVSdWng==
+
+expo-image-loader@~4.7.0:
+  version "4.7.0"
+  resolved "https://registry.npmjs.org/expo-image-loader/-/expo-image-loader-4.7.0.tgz"
+  integrity sha512-cx+MxxsAMGl9AiWnQUzrkJMJH4eNOGlu7XkLGnAXSJrRoIiciGaKqzeaD326IyCTV+Z1fXvIliSgNW+DscvD8g==
 
 expo-keep-awake@~13.0.2:
   version "13.0.2"

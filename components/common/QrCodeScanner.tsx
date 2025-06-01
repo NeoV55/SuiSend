@@ -1,9 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Alert, Modal, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Modal, TouchableOpacity, Alert, Platform } from 'react-native';
+import { Camera } from 'expo-camera';
 import { BarCodeScanner } from 'expo-barcode-scanner';
-import { X, QrCode } from 'lucide-react-native';
-import { useTheme } from '@/context/ThemeContext';
+import { X } from 'lucide-react-native';
+import { useTheme } from '../../context/ThemeContext';
 
 interface QrCodeScannerProps {
   isVisible: boolean;
@@ -12,11 +12,11 @@ interface QrCodeScannerProps {
   title?: string;
 }
 
-export default function QrCodeScanner({ 
-  isVisible, 
-  onClose, 
-  onScan, 
-  title = "Scan QR Code" 
+export default function QrCodeScanner({
+  isVisible,
+  onClose,
+  onScan,
+  title = "Scan QR Code"
 }: QrCodeScannerProps) {
   const { theme } = useTheme();
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
@@ -30,41 +30,36 @@ export default function QrCodeScanner({
 
     if (isVisible) {
       getBarCodeScannerPermissions();
-      setScanned(false);
     }
   }, [isVisible]);
 
   const handleBarCodeScanned = ({ type, data }: { type: string; data: string }) => {
-    if (scanned) return;
-    
-    setScanned(true);
-    onScan(data);
+    if (!scanned) {
+      setScanned(true);
+      onScan(data);
+      setTimeout(() => {
+        setScanned(false);
+        onClose();
+      }, 100);
+    }
   };
 
   if (hasPermission === null) {
-    return (
-      <Modal visible={isVisible} transparent animationType="slide">
-        <View style={[styles.container, { backgroundColor: theme.background }]}>
-          <Text style={[styles.text, { color: theme.text }]}>
-            Requesting camera permission...
-          </Text>
-        </View>
-      </Modal>
-    );
+    return null;
   }
 
   if (hasPermission === false) {
     return (
-      <Modal visible={isVisible} transparent animationType="slide">
+      <Modal visible={isVisible} animationType="slide">
         <View style={[styles.container, { backgroundColor: theme.background }]}>
           <Text style={[styles.text, { color: theme.text }]}>
-            Camera permission is required to scan QR codes
+            No access to camera
           </Text>
-          <TouchableOpacity 
-            style={[styles.button, { backgroundColor: theme.primary }]}
+          <TouchableOpacity
+            style={[styles.closeButton, { backgroundColor: theme.primary }]}
             onPress={onClose}
           >
-            <Text style={styles.buttonText}>Close</Text>
+            <Text style={styles.closeButtonText}>Close</Text>
           </TouchableOpacity>
         </View>
       </Modal>
@@ -72,43 +67,35 @@ export default function QrCodeScanner({
   }
 
   return (
-    <Modal visible={isVisible} transparent animationType="slide">
-      <View style={styles.modalContainer}>
-        <View style={[styles.header, { backgroundColor: theme.surface }]}>
+    <Modal visible={isVisible} animationType="slide">
+      <View style={[styles.container, { backgroundColor: theme.background }]}>
+        <View style={styles.header}>
           <Text style={[styles.title, { color: theme.text }]}>{title}</Text>
-          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+          <TouchableOpacity onPress={onClose} style={styles.closeIcon}>
             <X size={24} color={theme.text} />
           </TouchableOpacity>
         </View>
-        
-        <View style={styles.scannerContainer}>
+
+        <View style={styles.cameraContainer}>
           <BarCodeScanner
             onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
             style={StyleSheet.absoluteFillObject}
           />
-          
+
           <View style={styles.overlay}>
             <View style={styles.scanArea} />
-          </View>
-          
-          <View style={[styles.instructions, { backgroundColor: theme.surface }]}>
-            <QrCode size={24} color={theme.primary} />
-            <Text style={[styles.instructionText, { color: theme.text }]}>
-              Position the QR code within the frame
+            <Text style={[styles.instructionText, { color: 'white' }]}>
+              Position QR code within the frame
             </Text>
           </View>
         </View>
-        
-        {scanned && (
-          <View style={[styles.footer, { backgroundColor: theme.surface }]}>
-            <TouchableOpacity
-              style={[styles.button, { backgroundColor: theme.primary }]}
-              onPress={() => setScanned(false)}
-            >
-              <Text style={styles.buttonText}>Scan Again</Text>
-            </TouchableOpacity>
-          </View>
-        )}
+
+        <TouchableOpacity
+          style={[styles.closeButton, { backgroundColor: theme.primary }]}
+          onPress={onClose}
+        >
+          <Text style={styles.closeButtonText}>Cancel</Text>
+        </TouchableOpacity>
       </View>
     </Modal>
   );
@@ -117,76 +104,61 @@ export default function QrCodeScanner({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  modalContainer: {
-    flex: 1,
-    backgroundColor: 'black',
+    paddingTop: 50,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 20,
-    paddingTop: 50,
   },
   title: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
   },
-  closeButton: {
-    padding: 8,
+  closeIcon: {
+    padding: 4,
   },
-  scannerContainer: {
+  cameraContainer: {
     flex: 1,
+    margin: 20,
+    borderRadius: 12,
+    overflow: 'hidden',
     position: 'relative',
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.3)',
   },
   scanArea: {
     width: 250,
     height: 250,
     borderWidth: 2,
-    borderColor: '#fff',
-    borderRadius: 10,
+    borderColor: 'white',
+    borderRadius: 12,
     backgroundColor: 'transparent',
   },
-  instructions: {
-    position: 'absolute',
-    bottom: 100,
-    left: 20,
-    right: 20,
-    padding: 16,
-    borderRadius: 8,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
   instructionText: {
-    flex: 1,
-    fontSize: 14,
-  },
-  footer: {
-    padding: 20,
-  },
-  button: {
-    padding: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: 'white',
+    marginTop: 20,
     fontSize: 16,
-    fontWeight: 'bold',
+    textAlign: 'center',
   },
   text: {
     fontSize: 16,
     textAlign: 'center',
-    marginBottom: 20,
+    margin: 20,
+  },
+  closeButton: {
+    margin: 20,
+    padding: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  closeButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
