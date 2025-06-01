@@ -1,0 +1,56 @@
+C:\Users\SR\Downloads\SuiSend-main\SuiSend-main>npm run android
+
+> nfc-payment-wallet@1.0.0 android
+> expo run:android
+
+› Building app...
+Downloading https://services.gradle.org/distributions/gradle-7.5.1-all.zip
+...............10%................20%................30%................40%................50%................60%...............70%................80%................90%................100%
+
+Welcome to Gradle 7.5.1!
+
+Here are the highlights of this release:
+ - Support for Java 18
+ - Support for building with Groovy 4
+ - Much more responsive continuous builds
+ - Improved diagnostics for dependency resolution
+
+For more details see https://docs.gradle.org/7.5.1/release-notes.html
+
+Starting a Gradle Daemon (subsequent builds will be faster)
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Unable to start the daemon process.
+This problem might be caused by incorrect configuration of the daemon.
+For example, an unrecognized jvm option is used.
+Please refer to the User Manual chapter on the daemon at https://docs.gradle.org/7.5.1/userguide/gradle_daemon.html
+Process command line: C:\Program Files\Java\jdk-17\bin\java.exe -XX:MaxPermSize=2048m -XX:+HeapDumpOnOutOfMemoryError --add-opens 
+java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.invoke=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.prefs/java.util.prefs=ALL-UNNAMED --add-opens java.prefs/java.util.prefs=ALL-UNNAMED --add-opens java.base/java.nio.charset=ALL-UNNAMED --add-opens java.base/java.net=ALL-UNNAMED --add-opens java.base/java.util.concurrent.atomic=ALL-UNNAMED -Xmx4g -Dfile.encoding=UTF-8 -Duser.country=MY -Duser.language=en -Duser.variant -cp C:\Users\SR\.gradle\wrapper\dists\gradle-7.5.1-all\1ehga6e77gqps5uk2kc5kf1vc\gradle-7.5.1\lib\gradle-launcher-7.5.1.jar org.gradle.launcher.daemon.bootstrap.GradleDaemon 7.5.1
+Please read the following process output to find out more:
+-----------------------
+Unrecognized VM option 'MaxPermSize=2048m'
+Error: Could not create the Java Virtual Machine.
+Error: A fatal exception has occurred. Program will exit.
+
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+
+* Get more help at https://help.gradle.org
+Error: C:\Users\SR\Downloads\SuiSend-main\SuiSend-main\android\gradlew.bat app:assembleDebug -x lint -x test --configure-on-demand --build-cache -PreactNativeDevServerPort=8081 -PreactNativeArchitectures=x86_64,arm64-v8a exited with non-zero code: 1
+Error: C:\Users\SR\Downloads\SuiSend-main\SuiSend-main\android\gradlew.bat app:assembleDebug -x lint -x test --configure-on-demand --build-cache -PreactNativeDevServerPort=8081 -PreactNativeArchitectures=x86_64,arm64-v8a exited with non-zero code: 1
+    at ChildProcess.completionListener (C:\Users\SR\Downloads\SuiSend-main\SuiSend-main\node_modules\@expo\spawn-async\src\spawnAsync.ts:67:13)
+    at Object.onceWrapper (node:events:632:26)
+    at ChildProcess.emit (node:events:517:28)
+    at ChildProcess.cp.emit (C:\Users\SR\Downloads\SuiSend-main\SuiSend-main\node_modules\cross-spawn\lib\enoent.js:34:29)        
+    at maybeClose (node:internal/child_process:1098:16)
+    at Process.ChildProcess._handle.onexit (node:internal/child_process:303:5)
+    ...
+    at spawnAsync (C:\Users\SR\Downloads\SuiSend-main\SuiSend-main\node_modules\@expo\spawn-async\src\spawnAsync.ts:28:21)        
+    at spawnGradleAsync (C:\Users\SR\Downloads\SuiSend-main\SuiSend-main\node_modules\@expo\cli\src\start\platforms\android\gradle.ts:134:28)
+    at assembleAsync (C:\Users\SR\Downloads\SuiSend-main\SuiSend-main\node_modules\@expo\cli\src\start\platforms\android\gradle.ts:83:16)
+    at runAndroidAsync (C:\Users\SR\Downloads\SuiSend-main\SuiSend-main\node_modules\@expo\cli\src\run\android\runAndroidAsync.ts:62:24)
