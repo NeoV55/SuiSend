@@ -1,11 +1,10 @@
-
 import { Platform } from 'react-native';
-import NfcManager, { NfcTech, Ndef, TagEvent } from 'react-native-nfc-manager';
+import NfcManager, { NfcTech, Ndef, TagEvent, NfcEvents } from 'react-native-nfc-manager';
 
 export interface NfcTag {
   id: string;
   type: string;
-  data?: any;
+  data?: string;
 }
 
 export interface NfcWriteOptions {
@@ -106,7 +105,7 @@ class NfcService {
     try {
       if (this.isInitialized) {
         await this.unregisterTagEvent();
-        await NfcManager.stop();
+        await NfcManager.cancelTechnologyRequest();  // Using correct API
         this.isInitialized = false;
         console.log('NFC Manager stopped');
       }
@@ -122,7 +121,7 @@ class NfcService {
       }
 
       this.tagListener = callback;
-      await NfcManager.setEventListener('onTag', callback);
+      await NfcManager.setEventListener(NfcEvents.DiscoverTag, callback);
       console.log('NFC tag event listener registered');
     } catch (error) {
       console.error('Error registering tag event:', error);
@@ -133,7 +132,7 @@ class NfcService {
   async unregisterTagEvent(): Promise<void> {
     try {
       if (this.tagListener) {
-        await NfcManager.setEventListener('onTag', null);
+        await NfcManager.setEventListener(NfcEvents.DiscoverTag, null);
         this.tagListener = null;
         console.log('NFC tag event listener unregistered');
       }
@@ -180,13 +179,14 @@ class NfcService {
       }
 
       // Try to read NDEF data
-      let data = null;
+      let data: string | undefined;
       try {
-        const ndefRecords = await NfcManager.getNdefMessage();
-        if (ndefRecords && ndefRecords.length > 0) {
+        const tag = await NfcManager.getTag();
+        if (tag?.ndefMessage && tag.ndefMessage.length > 0) {
           // Parse the first NDEF record
-          const record = ndefRecords[0];
-          data = Ndef.text.decodePayload(record.payload);
+          const record = tag.ndefMessage[0];
+          const payload = new Uint8Array(record.payload);
+          data = Ndef.text.decodePayload(payload);
         }
       } catch (ndefError) {
         console.log('No NDEF data found or error reading:', ndefError);
@@ -197,7 +197,7 @@ class NfcService {
       return {
         id: tag.id || 'unknown',
         type: tag.techTypes?.[0] || 'unknown',
-        data: data
+        data
       };
     } catch (error) {
       console.error('Error reading NFC tag:', error);
@@ -271,10 +271,21 @@ class NfcService {
       const cardData = JSON.parse(tag.data);
       
       // Validate the card data structure
-      if (cardData.walletAddress && cardData.cardMode && typeof cardData.balance === 'number') {
+      if (
+        cardData.id &&
+        cardData.id.startsWith('card_') &&
+        cardData.walletAddress &&
+        typeof cardData.walletAddress === 'string' &&
+        cardData.cardMode &&
+        (cardData.cardMode === 'sender' || cardData.cardMode === 'receiver') &&
+        typeof cardData.balance === 'number' &&
+        typeof cardData.timestamp === 'number' &&
+        cardData.timestamp > 0
+      ) {
         return cardData as WalletCardData;
       }
       
+      console.warn('Invalid card data structure:', cardData);
       return null;
     } catch (error) {
       console.error('Error reading wallet from card:', error);
@@ -292,14 +303,23 @@ class NfcService {
 
   async requestPermissions(): Promise<boolean> {
     try {
-      if (Platform.OS === 'android') {
-        // Android handles NFC permissions automatically
-        return true;
-      } else if (Platform.OS === 'ios') {
-        // iOS NFC permissions are handled through Info.plist
-        return true;
+      switch (Platform.OS) {
+        case 'android':
+          // Android handles NFC permissions automatically
+          return true;
+        
+        case 'ios':
+          // iOS NFC permissions are handled through Info.plist
+          return true;
+        
+        case 'web':
+          console.log('NFC is not supported on web platform');
+          return false;
+        
+        default:
+          console.log(`NFC is not supported on ${Platform.OS} platform`);
+          return false;
       }
-      return false;
     } catch (error) {
       console.error('Error requesting NFC permissions:', error);
       return false;

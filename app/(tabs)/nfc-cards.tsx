@@ -36,7 +36,25 @@ export default function NfcCardsScreen() {
       console.log('NFC Support check result:', isSupported);
       
       if (!isSupported) {
-        Alert.alert('NFC Not Supported', 'Your device does not support NFC functionality.');
+        if (Platform.OS === 'ios') {
+          Alert.alert(
+            'NFC Not Supported',
+            'Your iPhone may not support NFC, or NFC capabilities are not enabled in the app configuration. Please ensure:\n\n' +
+            '1. You are using iPhone 7 or newer\n' +
+            '2. NFC is enabled in phone settings\n' +
+            '3. App has proper permissions'
+          );
+        } else if (Platform.OS === 'android') {
+          Alert.alert(
+            'NFC Not Supported',
+            'NFC appears to be unavailable. Please ensure:\n\n' +
+            '1. Your device has NFC hardware\n' +
+            '2. NFC is enabled in Settings > Connected Devices\n' +
+            '3. App has NFC permissions'
+          );
+        } else {
+          Alert.alert('NFC Not Supported', 'Your device does not support NFC functionality.');
+        }
         return;
       }
 
@@ -44,12 +62,26 @@ export default function NfcCardsScreen() {
       if (started) {
         setIsNfcActive(true);
         console.log('NFC initialized successfully');
+        
+        // Request permissions explicitly
+        const hasPermissions = await NfcService.requestPermissions();
+        if (!hasPermissions) {
+          Alert.alert(
+            'NFC Permissions Required',
+            'Please grant NFC permissions to use this feature. You can enable them in your device settings.'
+          );
+        }
       } else {
-        Alert.alert('NFC Initialization Failed', 'Could not start NFC service. Please ensure NFC is enabled in your device settings.');
+        Alert.alert(
+          'NFC Initialization Failed',
+          Platform.OS === 'ios' 
+            ? 'Could not start NFC service. Please check if NFC is enabled in your iPhone settings and the app has proper permissions.'
+            : 'Could not start NFC service. Please ensure NFC is enabled in your device settings > Connected Devices.'
+        );
       }
     } catch (error) {
       console.error('Failed to initialize NFC:', error);
-      Alert.alert('NFC Error', `Failed to initialize NFC: ${error.message || 'Unknown error'}`);
+      Alert.alert('NFC Error', `Failed to initialize NFC: ${error.message || 'Unknown error'}\n\nPlease ensure NFC is enabled in your device settings and the app has proper permissions.`);
     } finally {
       setIsInitializing(false);
     }
