@@ -1,0 +1,49 @@
+C:\Users\SR\Downloads\SuiSend-main\SuiSend-main>npm run android
+
+> nfc-payment-wallet@1.0.0 android
+> expo run:android
+
+› Building app...
+Configuration on demand is an incubating feature.
+
+> Configure project :gradle-plugin:react-native-gradle-plugin
+e: C:\Users\SR\Downloads\SuiSend-main\SuiSend-main\node_modules\@react-native\gradle-plugin\react-native-gradle-plugin\build.gradle.kts:69:5: Val cannot be reassigned
+e: C:\Users\SR\Downloads\SuiSend-main\SuiSend-main\node_modules\@react-native\gradle-plugin\react-native-gradle-plugin\build.gradle.kts:70:9: Type mismatch: inferred type is Boolean but Property<Boolean> was expected
+
+FAILURE: Build failed with an exception.
+
+* Where:
+Build file 'C:\Users\SR\Downloads\SuiSend-main\SuiSend-main\node_modules\@react-native\gradle-plugin\react-native-gradle-plugin\build.gradle.kts' line: 69
+
+* What went wrong:
+Script compilation errors:
+
+  Line 69:     allWarningsAsErrors =
+               ^ Val cannot be reassigned
+
+  Line 70:         project.properties["enableWarningsAsErrors"]?.toString()?.toBoolean() ?: false
+                   ^ Type mismatch: inferred type is Boolean but Property<Boolean> was expected
+
+2 errors
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+
+* Get more help at https://help.gradle.org
+
+BUILD FAILED in 7s
+Error: C:\Users\SR\Downloads\SuiSend-main\SuiSend-main\android\gradlew.bat app:assembleDebug -x lint -x test --configure-on-demand --build-cache -PreactNativeDevServerPort=8081 -PreactNativeArchitectures=x86_64,arm64-v8a exited with non-zero code: 1
+Error: C:\Users\SR\Downloads\SuiSend-main\SuiSend-main\android\gradlew.bat app:assembleDebug -x lint -x test --configure-on-demand --build-cache -PreactNativeDevServerPort=8081 -PreactNativeArchitectures=x86_64,arm64-v8a exited with non-zero code: 1
+    at ChildProcess.completionListener (C:\Users\SR\Downloads\SuiSend-main\SuiSend-main\node_modules\@expo\spawn-async\src\spawnAsync.ts:67:13)
+    at Object.onceWrapper (node:events:632:26)
+    at ChildProcess.emit (node:events:517:28)
+    at ChildProcess.cp.emit (C:\Users\SR\Downloads\SuiSend-main\SuiSend-main\node_modules\cross-spawn\lib\enoent.js:34:29)        
+    at maybeClose (node:internal/child_process:1098:16)
+    at Process.ChildProcess._handle.onexit (node:internal/child_process:303:5)
+    ...
+    at spawnAsync (C:\Users\SR\Downloads\SuiSend-main\SuiSend-main\node_modules\@expo\spawn-async\src\spawnAsync.ts:28:21)        
+    at spawnGradleAsync (C:\Users\SR\Downloads\SuiSend-main\SuiSend-main\node_modules\@expo\cli\src\start\platforms\android\gradle.ts:134:28)
+    at assembleAsync (C:\Users\SR\Downloads\SuiSend-main\SuiSend-main\node_modules\@expo\cli\src\start\platforms\android\gradle.ts:83:16)
+    at runAndroidAsync (C:\Users\SR\Downloads\SuiSend-main\SuiSend-main\node_modules\@expo\cli\src\run\android\runAndroidAsync.ts:62:24)
