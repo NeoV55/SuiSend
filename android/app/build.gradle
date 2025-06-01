@@ -12,11 +12,7 @@ android {
 
     namespace "com.suisend.app"
     
-    configurations.all {
-        resolutionStrategy {
-            force 'com.facebook.react:react-native:0.79.1'
-        }
-    }
+    
     
     defaultConfig {
         applicationId "com.suisend.app"
