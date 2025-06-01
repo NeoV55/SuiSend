@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 import { createWalletFromMnemonic, createWalletFromPrivateKey } from '@/utils/cryptoUtils';
 import NfcService from '@/services/NfcService';
+import QrCodeService, { QrTransactionData, QrWalletData } from '@/services/QrCodeService';
 
 export type CardMode = 'sender' | 'receiver' | null;
 export type AppMode = 'online' | 'offline';
@@ -55,6 +56,12 @@ interface WalletContextType {
   startNfcListening: () => Promise<void>;
   stopNfcListening: () => void;
   performNfcTransaction: (amount: number, recipientCard?: string) => Promise<void>;
+
+  // QR Code operations
+  generateWalletQr: () => string;
+  generateTransactionQr: (amount: number, recipient?: string) => string;
+  processQrTransaction: (qrData: string) => Promise<void>;
+  generatePaymentRequestQr: (amount: number, message?: string) => string;
 
   // Transaction management
   processPendingTransactions: () => Promise<void>;
@@ -486,6 +493,98 @@ export const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
     }
   };
 
+  // QR Code Methods
+  const generateWalletQr = (): string => {
+    if (!wallet) throw new Error('No wallet available');
+
+    const walletData: QrWalletData = {
+      address: wallet.address,
+      publicKey: '', // You'll need to get this from wallet
+      balance: wallet.balance,
+      coinObjects: [], // You'll need to populate this
+      lastSync: Date.now(),
+      cardMode: cardMode || 'sender',
+    };
+
+    return QrCodeService.generateWalletQrData(walletData);
+  };
+
+  const generateTransactionQr = (amount: number, recipient?: string): string => {
+    if (!wallet) throw new Error('No wallet available');
+
+    const transactionData: QrTransactionData = {
+      walletAddress: wallet.address,
+      amount,
+      recipient,
+      timestamp: Date.now(),
+      transactionId: `qr_tx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      type: cardMode === 'sender' ? 'send' : 'receive',
+      isOffline: appMode === 'offline',
+    };
+
+    return QrCodeService.generateTransactionQrData(transactionData);
+  };
+
+  const generatePaymentRequestQr = (amount: number, message?: string): string => {
+    if (!wallet) throw new Error('No wallet available');
+    return QrCodeService.generatePaymentRequestQr(amount, wallet.address, message);
+  };
+
+  const processQrTransaction = async (qrData: string): Promise<void> => {
+    try {
+      const parsed = QrCodeService.parseQrData(qrData);
+      if (!parsed) throw new Error('Invalid QR code data');
+
+      switch (parsed.type) {
+        case 'SuiSend_Transaction':
+          if (QrCodeService.validateTransactionData(parsed.data)) {
+            const transaction: NFCTransaction = {
+              amount: parsed.data.amount,
+              fromCard: parsed.data.sender || parsed.data.walletAddress,
+              toCard: parsed.data.recipient || wallet?.address || '',
+              timestamp: parsed.data.timestamp,
+            };
+
+            if (appMode === 'online' && isOnline) {
+              await processOnlineTransaction(transaction);
+            } else {
+              createOfflineTransaction(transaction);
+            }
+          }
+          break;
+
+        case 'SuiSend_PaymentRequest':
+          // Handle payment request
+          const paymentTx: NFCTransaction = {
+            amount: parsed.data.amount,
+            fromCard: wallet?.address || '',
+            toCard: parsed.data.recipient,
+            timestamp: Date.now(),
+          };
+
+          if (appMode === 'online' && isOnline) {
+            await processOnlineTransaction(paymentTx);
+          } else {
+            createOfflineTransaction(paymentTx);
+          }
+          break;
+
+        case 'SuiSend_Wallet':
+          if (QrCodeService.validateWalletData(parsed.data)) {
+            console.log('Wallet data received via QR:', parsed.data);
+            // Handle wallet data sharing if needed
+          }
+          break;
+
+        default:
+          throw new Error('Unsupported QR code type');
+      }
+    } catch (error) {
+      console.error('Error processing QR transaction:', error);
+      throw error;
+    }
+  };
+
   return (
     <WalletContext.Provider value={{
       wallet,
@@ -498,6 +597,10 @@ export const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
       startNfcListening,
       stopNfcListening,
       performNfcTransaction,
+      generateWalletQr,
+      generateTransactionQr,
+      processQrTransaction,
+      generatePaymentRequestQr,
       processPendingTransactions,
       createOfflineTransaction,
       createWallet,

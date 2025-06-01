@@ -187,6 +187,9 @@ export default function HomeScreen() {
           • <Text style={{ fontWeight: 'bold' }}>Offline Mode:</Text> Transactions are queued until internet connection is restored
         </Text>
         <Text style={[styles.explanation, { color: theme.textSecondary }]}>
+          • <Text style={{ fontWeight: 'bold' }}>QR Fallback:</Text> Use QR codes when NFC is not available
+        </Text>
+        <Text style={[styles.explanation, { color: theme.textSecondary }]}>
           • Uses Sui blockchain offline signing for secure transactions
         </Text>
       </View>

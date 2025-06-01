@@ -18,3 +18,15 @@ externalPort = 80
 [[ports]]
 localPort = 8082
 externalPort = 3000
+
+[workflows]
+runButton = "Start Development Server"
+
+[[workflows.workflow]]
+name = "Start Development Server"
+author = 42661209
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx expo start --web"

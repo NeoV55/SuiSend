@@ -58,7 +58,16 @@ export default function TabLayout() {
           options={{
             title: 'NFC Cards',
             tabBarIcon: ({ color, focused }) => (
-              <TabBarIcon name={focused ? 'card' : 'card-outline'} color={color} />
+              <TabBarIcon name={focused ? 'credit-card' : 'credit-card-outline'} color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="qr-transactions"
+          options={{
+            title: 'QR Codes',
+            tabBarIcon: ({ color, focused }) => (
+              <TabBarIcon name={focused ? 'qr-code' : 'qr-code-outline'} color={color} />
             ),
           }}
         />
