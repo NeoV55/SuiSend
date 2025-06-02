@@ -6,6 +6,7 @@ import { Share as ShareIcon, Download, Copy } from 'lucide-react-native';
 import * as Clipboard from 'expo-clipboard';
 import { useTheme } from '../../context/ThemeContext';
 
+
 interface QrCodeGeneratorProps {
   data: string;
   title?: string;
