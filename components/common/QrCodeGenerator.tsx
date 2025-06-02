@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, Share, Alert, TouchableOpacity } from 'react-na
 import QRCode from 'react-native-qrcode-svg';
 import { Share as ShareIcon, Download, Copy } from 'lucide-react-native';
 import * as Clipboard from 'expo-clipboard';
-import { useTheme } from '@/context/ThemeContext';
+import { useTheme } from '../../context/ThemeContext';
 
 interface QrCodeGeneratorProps {
   data: string;

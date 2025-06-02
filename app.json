@@ -7,7 +7,7 @@
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": false,
+    "sdkVersion": "53.0.0",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.suisend.app",
@@ -36,7 +36,7 @@
     "plugins": [
       "expo-router",
       "expo-font",
-      "expo-web-browser",
+    
       [
         "react-native-nfc-manager",
         {
